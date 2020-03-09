@@ -1,4 +1,6 @@
-﻿using System;
+﻿using cw2_apbd.models;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace cw2_apbd
@@ -33,6 +35,24 @@ namespace cw2_apbd
             // - komunikacja i przesylanie informacji miedzy problemami
             // - 
 
+            var list = new List<Student>();
+
+
+            //konstruktor lub .... object initializer 
+            var st = new Student()
+            {
+                Imie = "Jan",
+                Nazwisko = "Kowalski",
+                Email = "kowalski@wp.pl"
+
+            };
+
+            list.Add(st);
+
+
+            Console.WriteLine(list[0].Imie);
+            
+            
 
 
         }
