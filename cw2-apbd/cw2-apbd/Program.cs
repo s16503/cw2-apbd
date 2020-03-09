@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace cw2_apbd
 {
@@ -49,12 +50,20 @@ namespace cw2_apbd
 
             list.Add(st);
 
-
-            Console.WriteLine(list[0].Imie);
+            // student.imie = "blbla";  <<< tak na prrawde wykonywana jest metoda set 
             
-            
+            //Console.WriteLine(list[0].Imie);
 
+            FileStream writer = new FileStream(@"data.xml",FileMode.Create);
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Student>),
+                                       new XmlRootAttribute("uczelnia"));
+            serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekcie
 
+            writer.Dispose();
+
+            // pgago\studenci -> s16503.txt (w środku link do repozytorium)
+
+            //do końca soboty
         }
     }
 }
