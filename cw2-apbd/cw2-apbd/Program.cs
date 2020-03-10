@@ -11,21 +11,39 @@ namespace cw2_apbd
         static void Main(string[] args)
         {
 
-            
-            Console.WriteLine("Hello World!");
+            string source;
+            string outPath;
+            string format;
 
-
-            string path = @"data\dane.csv";
-            //wczytywanie 
-            var fi = new FileInfo(path);
-            using (var stream = new StreamReader(fi.OpenRead()))    //blok using gdy ammy metode Dispose , zwalnianie zasobów
+            // ściezki z argumentów lub domyślne
+            if(args.Length<3)
             {
+                source = @"data.csv";
+                outPath = @"result.xml";
+                format = "xml";
+            }
+            else
+            {
+                source = args[0];
+                outPath = args[1];
+                format = args[2];
+            }
 
+          
+
+
+      
+            //wczytywanie 
+            var fi = new FileInfo(source);
+            using (var stream = new StreamReader(fi.OpenRead()))    //blok using gdy mamy metode Dispose , zwalnianie zasobów
+            {
                 string line = null;
 
                 while ((line = stream.ReadLine()) != null)
                 {
                     Console.WriteLine(line);
+
+
                 }
             }
 
@@ -34,10 +52,8 @@ namespace cw2_apbd
 
             //XML
             // - komunikacja i przesylanie informacji miedzy problemami
-            // - 
-
+    
             var list = new List<Student>();
-
 
             //konstruktor lub .... object initializer 
             var st = new Student()
@@ -54,7 +70,7 @@ namespace cw2_apbd
             
             //Console.WriteLine(list[0].Imie);
 
-            FileStream writer = new FileStream(@"data.xml",FileMode.Create);
+            FileStream writer = new FileStream(outPath,FileMode.Create);
             XmlSerializer serializer = new XmlSerializer(typeof(List<Student>),
                                        new XmlRootAttribute("uczelnia"));
             serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekcie
