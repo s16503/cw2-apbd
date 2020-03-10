@@ -64,7 +64,7 @@ namespace cw2_apbd
             // pgago\studenci -> s16503.txt (w środku link do repozytorium)
 
             //do końca soboty
-            //test
+            //test2
 
         }
     }
