@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace cw2_apbd.models
@@ -9,15 +7,20 @@ namespace cw2_apbd.models
     {
         // prop + tabx2
 
-            [XmlAttribute(attributeName:"email")]
-        public string Email { get; set; }
+        //    [XmlAttribute(attributeName:"email")]
+        //public string Email { get; set; }
+ 
+
+        [XmlAttribute(attributeName: "indexNumber")]
+        public string index { get; set; }
 
         [XmlElement(elementName: "fname")]
-        public string Imie { get; set; }
-        //public string Nazwisko { get; set; }
+        public string imie { get; set; }
+        //public string nazwisko { get; set; }
 
 
-            // prpfull + tabx  << właściwość pełna
+        // prpfull + tabx  << właściwość pełna
+        [XmlElement(elementName: "lname")]
         private string _nazwisko;
 
         public string Nazwisko
@@ -29,6 +32,23 @@ namespace cw2_apbd.models
                 _nazwisko = value;
             }
         }
+
+        [XmlElement(elementName: "birthdate")]
+        public string dataUr { get; set; }
+
+        [XmlElement(elementName: "email")]
+        public string email { get; set; }
+
+        [XmlElement(elementName: "mothersName")]
+        public string imieMatki { get; set; }
+
+        [XmlElement(elementName: "fathersName")]
+        public string imieOjca { get; set; }
+
+
+       
+        public 
+
 
 
 

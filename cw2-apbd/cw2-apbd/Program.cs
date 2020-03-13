@@ -1,5 +1,6 @@
 ﻿using cw2_apbd.models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
@@ -29,10 +30,18 @@ namespace cw2_apbd
                 format = args[2];
             }
 
-          
+
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+
+            dict.Add("A", 55);
+            dict.Add("B", 43);
+            dict.Add("C", 22);
+
+            foreach(int i in dict.Values)
+            Console.WriteLine(">>>>> " + i); 
 
 
-      
+
             //wczytywanie 
             var fi = new FileInfo(source);
             using (var stream = new StreamReader(fi.OpenRead()))    //blok using gdy mamy metode Dispose , zwalnianie zasobów
@@ -58,9 +67,19 @@ namespace cw2_apbd
             //konstruktor lub .... object initializer 
             var st = new Student()
             {
-                Imie = "Jan",
+                index = "s5555",
+                imie = "Jan",
                 Nazwisko = "Kowalski",
-                Email = "kowalski@wp.pl"
+                email = "kowalski@wp.pl",
+                dataUr = "02.03.1997",
+                imieMatki = "Alicja",
+                imieOjca = "Andrzej",
+                S = new Studies()
+                {
+                    name = "Informatyka",
+                    mode = "dzienne"
+                }
+                
 
             };
 
@@ -73,6 +92,8 @@ namespace cw2_apbd
             FileStream writer = new FileStream(outPath,FileMode.Create);
             XmlSerializer serializer = new XmlSerializer(typeof(List<Student>),
                                        new XmlRootAttribute("uczelnia"));
+
+            
             serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekcie
 
             writer.Dispose();
