@@ -22,17 +22,17 @@ namespace cw2_apbd.models
 
         // prpfull + tabx  << właściwość pełna
         [XmlElement(elementName: "lname")]
-        private string _nazwisko;
+        public string nazwisko { get; set; }
 
-        public string Nazwisko
-        {
-            get { return _nazwisko; }
-            set
-            {
-                if (value == null) throw new ArgumentException();
-                _nazwisko = value;
-            }
-        }
+        //public string Nazwisko
+        //{
+        //    get { return _nazwisko; }
+        //    set
+        //    {
+        //        if (value == null) throw new ArgumentException();
+        //        _nazwisko = value;
+        //    }
+        //}
 
         [XmlElement(elementName: "birthdate")]
         public string dataUr { get; set; }

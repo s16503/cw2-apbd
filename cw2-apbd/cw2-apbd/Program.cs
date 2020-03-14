@@ -31,14 +31,18 @@ namespace cw2_apbd
                 format = args[2];
             }
 
-          
+
+
+            Context list = new Context();   // listę studentów i kierunków przechowuje w obj Context, którego potem uzyję do serializacji
+
+
 
             Dictionary<string, Student> dict = new Dictionary<string, Student>();
             //Dictionary<String, int> kierunki = new Dictionary<string, int>();
             System.IO.File.WriteAllText(@"log.txt",String.Empty);
 
 
-            Context2 kierunki = new Context2();
+        
 
 
             //wczytywanie 
@@ -50,50 +54,49 @@ namespace cw2_apbd
             {
                 string line = null;
 
-                while ((line = stream.ReadLine()) != null)
+                while ((line = stream.ReadLine()) != null)      // odczyt z pliku
                 {
                         Console.WriteLine(line);
                         string[] student = line.Split(',');
 
                         bool pustaWart = false;
 
-                        foreach(string stud in student)
+                        foreach(string stud in student) // szukam pustych kolumn
                         {
                             if (stud.Equals(""))
                                 pustaWart = true;
 
                         }
 
-                        if(student.Length != 9)
+                        if(student.Length != 9) // jesli liczba kolumn sie nie zgadza
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Błąd danych(niepoprawna liczba kolumn) dla:  " + line + "\n");
                         }
-                        else if(pustaWart)
+                        else if(pustaWart)  // jesli któraś kolumna jest pusta
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Błąd danych(pusta kolumna) dla:  " + line + "\n");
                         }
                         else if(!dict.ContainsKey(student[4]))
                         {
-                            string[] tb = student[2].Split(" ");
-                            string kier = "";
-                            for(int j = 0; j<tb.Length-1; j++)
-                            {
-                                kier += tb[j];
-                                if (j < tb.Length - 2)
-                                    kier += " ";
-                            }
+                          //  string[] tb = student[2].Split(" ");
+                          //  string kier = "";
+                            //for(int j = 0; j<tb.Length-1; j++)
+                            //{
+                            //    kier += tb[j];
+                            //    if (j < tb.Length - 2)
+                            //        kier += " ";
+                            //}
 
                             dict.Add(student[4], new Student()
                             {
 
-
                                 index = student[4],
                                 imie = student[0],
-                                Nazwisko = student[1],
+                                nazwisko = student[1],
                                 studies = new Studies()
                                 {
 
-                                    name = kier,
+                                    name = student[2],
                                     mode = student[3]
                                 },
                                 dataUr = student[5],
@@ -106,9 +109,9 @@ namespace cw2_apbd
 
 
                             bool istn = false;
-                            foreach(ActiveStudies aS in kierunki.As)
+                            foreach(ActiveStudies aS in list.As)
                             {
-                                if (aS.name.Equals(kier))
+                                if (aS.name.Equals(student[2]))
                                 {
                                     aS.numberOfStudents++;
                                     istn = true;
@@ -119,18 +122,14 @@ namespace cw2_apbd
 
                             if(!istn)
                             {
-                                kierunki.As.Add(new ActiveStudies()
+                               list.As.Add(new ActiveStudies()
                                 {
-                                    name = kier,
+                                    name = student[2],
                                     numberOfStudents = 1
                                 });
 
                             }
-
-
-
-
-                                    
+       
                         }else
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Dupilkat dla:  " + line + "\n");
@@ -156,16 +155,11 @@ namespace cw2_apbd
             //var list = new Context();
             Student[] s = new Student[dict.Values.Count];
             dict.Values.CopyTo(s,0);
-            Context list = new Context();
+            
 
             foreach (Student st in s)
                 list.Students.Add(st);
 
-
-
-           
-           
-           
 
             //stream.Dispose();
 
@@ -175,44 +169,23 @@ namespace cw2_apbd
             // [XmlElement(elementName: "studies")]
 
 
-           
-
-            ////konstruktor lub .... object initializer 
-            //var st = new Student()
-            //{
-            //    index = "s5555",
-            //    imie = "Jan",
-            //    Nazwisko = "Kowalski",
-            //    email = "kowalski@wp.pl",
-            //    dataUr = "02.03.1997",
-            //    imieMatki = "Alicja",
-            //    imieOjca = "Andrzej",
-            //    studies = new Studies()
-            //    {
-            //        name = "Informatyka",
-            //        mode = "dzienne"
-            //    }
-
-
-            //};
-
-
-            //list.Students.Add(st);
+          
 
             // student.imie = "blbla";  <<< tak na prrawde wykonywana jest metoda set 
 
             //Console.WriteLine(list[0].Imie);
 
             FileStream writer = new FileStream(outPath,FileMode.Create);
-            XmlSerializer serializer = new XmlSerializer(typeof(Context),typeof(Context2),
-                                       new XmlRootAttribute("uczelnia"));
-            XmlSerializer serializer2 = new XmlSerializer(typeof(Context2));
+            XmlSerializer serializer = new XmlSerializer(typeof(Context));
+            XmlSerializerNamespaces xmlnsEmpty = new XmlSerializerNamespaces();
+            xmlnsEmpty.Add(string.Empty, string.Empty);
 
 
-            serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekciesera
-            serializer2.Serialize(writer,kierunki);
 
-         
+            serializer.Serialize(writer, list,xmlnsEmpty); // zapisuje jako plik xml w folderze /debug w projekciesera
+            
+
+
             writer.Dispose();
 
             // pgago\studenci -> s16503.txt (w środku link do repozytorium)
@@ -221,23 +194,43 @@ namespace cw2_apbd
             //test2
 
 
-            foreach (ActiveStudies a in kierunki.As)
+            foreach (ActiveStudies a in list.As)
                 Console.WriteLine(a.name);
+
+
+
+
+
         }
     }
 
-
-    [XmlRoot("Context")]
+    [Serializable]
+    [XmlRoot("uczelnia")]
     public class Context
     {
+        [XmlAttribute("createdAt")]
+        public string date = DateTime.Now.ToShortDateString();
+        [XmlAttribute("author")]
+        public string aut = "Jan Klejn";
 
-        public Context() { this.Students = new Students(); }
+        public Context() 
+        { this.Students = new Students();
+          this.As = new List<ActiveStudies>();
+        }
 
        
 
         [XmlArray("studenci")]
         [XmlArrayItem("student")]
         public Students Students { get; set; }
+
+
+
+        ///////
+
+        [XmlArray("activeStudies")]
+        [XmlArrayItem("studies")]
+        public List<ActiveStudies> As { get; set; }
     }
 
     public class Students : List<Student>
@@ -246,18 +239,18 @@ namespace cw2_apbd
 
 
 
-    [XmlRoot("Context2")]
-    public class Context2
-    {
+    //[XmlRoot("Context2")]
+    //public class Context2
+    //{
 
-        public Context2() { this.As = new List<ActiveStudies>();  }
+    //    public Context2() { this.As = new List<ActiveStudies>();  }
 
 
 
-        [XmlArray("activeStudies")]
-        [XmlArrayItem("studies")]
-        public List<ActiveStudies> As { get; set; }
-    }
+    //    [XmlArray("activeStudies")]
+    //    [XmlArrayItem("studies")]
+    //    public List<ActiveStudies> As { get; set; }
+    //}
 
     public class ActiveStudies
     {
