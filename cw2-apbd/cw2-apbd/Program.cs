@@ -31,19 +31,11 @@ namespace cw2_apbd
                 format = args[2];
             }
 
-
-
             Context list = new Context();   // listę studentów i kierunków przechowuje w obj Context, którego potem uzyję do serializacji
-
-
 
             Dictionary<string, Student> dict = new Dictionary<string, Student>();
             //Dictionary<String, int> kierunki = new Dictionary<string, int>();
             System.IO.File.WriteAllText(@"log.txt",String.Empty);
-
-
-        
-
 
             //wczytywanie 
             var fi = new FileInfo(source);
@@ -56,7 +48,7 @@ namespace cw2_apbd
 
                 while ((line = stream.ReadLine()) != null)      // odczyt z pliku
                 {
-                        Console.WriteLine(line);
+                       // Console.WriteLine(line);
                         string[] student = line.Split(',');
 
                         bool pustaWart = false;
@@ -71,22 +63,16 @@ namespace cw2_apbd
                         if(student.Length != 9) // jesli liczba kolumn sie nie zgadza
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Błąd danych(niepoprawna liczba kolumn) dla:  " + line + "\n");
+                            Console.WriteLine("Błąd danych(niepoprawna liczba kolumn) dla:  " + line + "\n");
                         }
                         else if(pustaWart)  // jesli któraś kolumna jest pusta
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Błąd danych(pusta kolumna) dla:  " + line + "\n");
+                            Console.WriteLine("Błąd danych(pusta kolumna) dla:  " + line + "\n");
                         }
                         else if(!dict.ContainsKey(student[4]))
                         {
-                          //  string[] tb = student[2].Split(" ");
-                          //  string kier = "";
-                            //for(int j = 0; j<tb.Length-1; j++)
-                            //{
-                            //    kier += tb[j];
-                            //    if (j < tb.Length - 2)
-                            //        kier += " ";
-                            //}
-
+                     
                             dict.Add(student[4], new Student()
                             {
 
@@ -107,6 +93,7 @@ namespace cw2_apbd
 
                             });
 
+                            Console.WriteLine("DODANO: " + line);
 
                             bool istn = false;
                             foreach(ActiveStudies aS in list.As)
@@ -133,8 +120,8 @@ namespace cw2_apbd
                         }else
                         {
                             System.IO.File.AppendAllText(@"log.txt", "Dupilkat dla:  " + line + "\n");
+                            Console.WriteLine("Dupilkat dla:  " + line + "\n");
                         }
-
 
                 }
             }
@@ -162,17 +149,10 @@ namespace cw2_apbd
 
 
             //stream.Dispose();
-
-
             //XML
             // - komunikacja i przesylanie informacji miedzy problemami
             // [XmlElement(elementName: "studies")]
-
-
-          
-
             // student.imie = "blbla";  <<< tak na prrawde wykonywana jest metoda set 
-
             //Console.WriteLine(list[0].Imie);
 
             FileStream writer = new FileStream(outPath,FileMode.Create);
@@ -181,11 +161,7 @@ namespace cw2_apbd
             xmlnsEmpty.Add(string.Empty, string.Empty);
 
 
-
-            serializer.Serialize(writer, list,xmlnsEmpty); // zapisuje jako plik xml w folderze /debug w projekciesera
-            
-
-
+            serializer.Serialize(writer, list,xmlnsEmpty); // zapisuje jako plik xml w folderze /debug w projekciesera     
             writer.Dispose();
 
             // pgago\studenci -> s16503.txt (w środku link do repozytorium)
@@ -193,13 +169,8 @@ namespace cw2_apbd
             //do końca soboty
             //test2
 
-
             foreach (ActiveStudies a in list.As)
                 Console.WriteLine(a.name);
-
-
-
-
 
         }
     }
@@ -224,8 +195,6 @@ namespace cw2_apbd
         [XmlArrayItem("student")]
         public Students Students { get; set; }
 
-
-
         ///////
 
         [XmlArray("activeStudies")]
@@ -237,30 +206,8 @@ namespace cw2_apbd
     {
     }
 
-
-
-    //[XmlRoot("Context2")]
-    //public class Context2
-    //{
-
-    //    public Context2() { this.As = new List<ActiveStudies>();  }
-
-
-
-    //    [XmlArray("activeStudies")]
-    //    [XmlArrayItem("studies")]
-    //    public List<ActiveStudies> As { get; set; }
-    //}
-
     public class ActiveStudies
     {
-
-        //public ActiveStudies(string n, int i)
-        //{
-        //    this.name = n;
-        //    this.numberOfStudents = i;
-        //}
-        
         [XmlAttribute(attributeName:"name")]
         public string name { get; set; }
         [XmlAttribute(attributeName: "numberOfStudents")]
