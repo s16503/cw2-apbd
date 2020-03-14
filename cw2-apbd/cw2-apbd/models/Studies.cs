@@ -5,12 +5,13 @@ using System.Xml.Serialization;
 
 namespace cw2_apbd.models
 {
-    class Studies
+    [Serializable]
+    public class Studies
     {
 
-       // [XmlElement(Namespace ="studies")]
+      
 
-        [XmlAttribute(AttributeName = "name")]
+        [XmlElement(elementName: "name")]
         public string name { get; set; }
 
         [XmlElement(elementName: "mode")]

@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 
 namespace cw2_apbd.models
 {
+    [Serializable]
     public class Student
     {
         // prop + tabx2
@@ -46,8 +47,8 @@ namespace cw2_apbd.models
         public string imieOjca { get; set; }
 
 
-       
-        public 
+        [XmlElement(elementName: "studies")]
+        public Studies studies { get; set; }
 
 
 
