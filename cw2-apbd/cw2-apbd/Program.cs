@@ -31,12 +31,15 @@ namespace cw2_apbd
                 format = args[2];
             }
 
-           // FileStream logWriter = new FileStream("log.txt", FileMode.Create);
+          
 
             Dictionary<string, Student> dict = new Dictionary<string, Student>();
+            //Dictionary<String, int> kierunki = new Dictionary<string, int>();
+            System.IO.File.WriteAllText(@"log.txt",String.Empty);
 
 
-          
+            Context2 kierunki = new Context2();
+
 
             //wczytywanie 
             var fi = new FileInfo(source);
@@ -54,31 +57,43 @@ namespace cw2_apbd
 
                         bool pustaWart = false;
 
-                        foreach(string s in student)
+                        foreach(string stud in student)
                         {
-                            if (s.Equals(""))
+                            if (stud.Equals(""))
                                 pustaWart = true;
 
                         }
 
                         if(student.Length != 9)
                         {
-                            System.IO.File.WriteAllText(@"log.txt", "Błąd danych(niepoprawna liczba kolumn) dla:  " + line);
+                            System.IO.File.AppendAllText(@"log.txt", "Błąd danych(niepoprawna liczba kolumn) dla:  " + line + "\n");
                         }
                         else if(pustaWart)
                         {
-                            System.IO.File.WriteAllText(@"log.txt", "Błąd danych(pusta kolumna) dla:  " + line);
+                            System.IO.File.AppendAllText(@"log.txt", "Błąd danych(pusta kolumna) dla:  " + line + "\n");
                         }
                         else if(!dict.ContainsKey(student[4]))
                         {
+                            string[] tb = student[2].Split(" ");
+                            string kier = "";
+                            for(int j = 0; j<tb.Length-1; j++)
+                            {
+                                kier += tb[j];
+                                if (j < tb.Length - 2)
+                                    kier += " ";
+                            }
+
                             dict.Add(student[4], new Student()
                             {
+
+
                                 index = student[4],
                                 imie = student[0],
                                 Nazwisko = student[1],
                                 studies = new Studies()
                                 {
-                                    name = student[2].Split(" ")[0],
+
+                                    name = kier,
                                     mode = student[3]
                                 },
                                 dataUr = student[5],
@@ -87,11 +102,38 @@ namespace cw2_apbd
                                 imieOjca = student[8]
 
 
+                            });
+
+
+                            bool istn = false;
+                            foreach(ActiveStudies aS in kierunki.As)
+                            {
+                                if (aS.name.Equals(kier))
+                                {
+                                    aS.numberOfStudents++;
+                                    istn = true;
+                                }
+                                   
+                               
                             }
-                                    );
+
+                            if(!istn)
+                            {
+                                kierunki.As.Add(new ActiveStudies()
+                                {
+                                    name = kier,
+                                    numberOfStudents = 1
+                                });
+
+                            }
+
+
+
+
+                                    
                         }else
                         {
-                            System.IO.File.WriteAllText(@"log.txt", "Dupilkat dla:  " + line);
+                            System.IO.File.AppendAllText(@"log.txt", "Dupilkat dla:  " + line + "\n");
                         }
 
 
@@ -102,22 +144,28 @@ namespace cw2_apbd
             catch(FileNotFoundException ex)
             {
                 Console.WriteLine("Plik o nazwie " + source + " nie istnieje");
-                System.IO.File.WriteAllText(@"log.txt", ex.Message);
+                System.IO.File.AppendAllText(@"log.txt", ex.Message + "\n");
             }
             catch(DirectoryNotFoundException ex2)
             {
                 Console.WriteLine("Podana ścieżka jest niepoprawna");
-                System.IO.File.WriteAllText(@"log.txt", ex2.Message);
+                System.IO.File.AppendAllText(@"log.txt", ex2.Message + "\n");
             }
 
 
-            var list = new Context();
+            //var list = new Context();
             Student[] s = new Student[dict.Values.Count];
             dict.Values.CopyTo(s,0);
+            Context list = new Context();
 
-            foreach (Student ss in s)
-                Console.WriteLine(ss.index);
+            foreach (Student st in s)
+                list.Students.Add(st);
 
+
+
+           
+           
+           
 
             //stream.Dispose();
 
@@ -156,11 +204,13 @@ namespace cw2_apbd
             //Console.WriteLine(list[0].Imie);
 
             FileStream writer = new FileStream(outPath,FileMode.Create);
-            XmlSerializer serializer = new XmlSerializer(typeof(Context),
+            XmlSerializer serializer = new XmlSerializer(typeof(Context),typeof(Context2),
                                        new XmlRootAttribute("uczelnia"));
+            XmlSerializer serializer2 = new XmlSerializer(typeof(Context2));
 
 
-              serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekcie
+            serializer.Serialize(writer, list); // zapisuje jako plik xml w folderze /debug w projekciesera
+            serializer2.Serialize(writer,kierunki);
 
          
             writer.Dispose();
@@ -170,6 +220,9 @@ namespace cw2_apbd
             //do końca soboty
             //test2
 
+
+            foreach (ActiveStudies a in kierunki.As)
+                Console.WriteLine(a.name);
         }
     }
 
@@ -180,6 +233,8 @@ namespace cw2_apbd
 
         public Context() { this.Students = new Students(); }
 
+       
+
         [XmlArray("studenci")]
         [XmlArrayItem("student")]
         public Students Students { get; set; }
@@ -187,5 +242,35 @@ namespace cw2_apbd
 
     public class Students : List<Student>
     {
+    }
+
+
+
+    [XmlRoot("Context2")]
+    public class Context2
+    {
+
+        public Context2() { this.As = new List<ActiveStudies>();  }
+
+
+
+        [XmlArray("activeStudies")]
+        [XmlArrayItem("studies")]
+        public List<ActiveStudies> As { get; set; }
+    }
+
+    public class ActiveStudies
+    {
+
+        //public ActiveStudies(string n, int i)
+        //{
+        //    this.name = n;
+        //    this.numberOfStudents = i;
+        //}
+        
+        [XmlAttribute(attributeName:"name")]
+        public string name { get; set; }
+        [XmlAttribute(attributeName: "numberOfStudents")]
+        public int numberOfStudents { get; set; }
     }
 }
